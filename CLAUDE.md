@@ -2,9 +2,9 @@
 
 ## Project Identity
 
-**Repository**: https://github.com/srjyoussef/recommendation-system.git  
-**Local Directory**: `C:\Users\gamer\Documents\Recommendation System`  
-**Dataset Location**: Same directory as project  
+**Repository**: https://github.com/srjyoussef/recommendation-system.git
+**Local Directory**: `D:\Recommendation System`
+**Dataset Location**: Same directory as project
 **Python Command**: `py` (due to PATH configuration)
 
 ---
@@ -432,7 +432,7 @@ plt.style.use('seaborn-v0_8-darkgrid')
 sns.set_palette("husl")
 
 # Dataset paths
-DATA_DIR = r"C:\Users\gamer\Documents\Recommendation System"
+DATA_DIR = r"D:\Recommendation System"
 RATINGS_PATH = os.path.join(DATA_DIR, "ml-ratings.csv")
 MOVIES_PATH = os.path.join(DATA_DIR, "ml-movies.csv")
 LINKS_PATH = os.path.join(DATA_DIR, "ml-links.csv")
@@ -469,17 +469,9 @@ plt.ylabel("Frequency")
 plt.show()
 
 # Business interpretation
-print(f"""
-Rating Statistics:
-- Mean: {rating_stats['mean'][0]:.2f} (above midpoint 2.5, indicating positive bias)
-- Median: {rating_stats['median'][0]:.1f}
-- Std Dev: {rating_stats['std_dev'][0]:.2f}
-
-Implication: Users predominantly rate movies they enjoyed, creating implicit 
-positive selection bias. This suggests collaborative filtering will work well 
-for warm-start users but we'll need content-based approaches for cold-start 
-scenarios where we can't rely on positive-only feedback patterns.
-""")
+# NOTE: I write business interpretation as a Markdown cell immediately after the code/plot,
+# using 3–6 specific bullets under a "Key findings" heading. I do not print multi-line
+# narrative summaries from code cells.
 ```
 
 ### Documentation Standards
@@ -703,3 +695,61 @@ This project demonstrates mid-to-senior level data science competency when:
 **Author**: Youssef  
 **Project Start**: December 2025  
 **Target Completion**: Production-ready recommendation system suitable for portfolio presentation
+
+---
+
+## Claude Code Notebook Style Guardrails
+
+I use this section as the operational spec for Claude Code whenever it edits any notebook in this repo (especially `01_eda.ipynb`). These rules keep the notebook professional, consistent, and free of obvious AI fingerprints.
+
+### Non-negotiables
+
+- I keep **Polars-first** for data manipulation. I only convert to pandas when a library requires it (typically plotting).
+- I preserve **temporal integrity** (no leakage). Any split logic uses timestamps and is documented.
+- I keep **all existing visuals** unless a visualization is objectively redundant *and* I replace it with a better one that serves the same purpose.
+- I keep outputs **compact and intentional**. If an output is long, I reduce it to top-k views and summary tables.
+
+### Notebook composition rules
+
+- I use Markdown cells for section headers, hypotheses (1–3 lines), interpretation, decisions, and **Key findings**.
+- I use code cells for **one atomic task** (load, validate, compute one table, generate one figure, compute one CI).
+- I avoid “mega-cells” that combine multiple tasks (load + clean + analyze + plot + summarize).
+
+### Output hygiene
+
+- I do **not** use decorative separators (e.g., `"="*80`, `"-"*100`, ASCII banners).
+- I do **not** print long narratives or “key findings” from code cells.
+- I prefer `display()` for tables and show only what is needed (small `head(n)`, top-k counts, percentiles tables).
+- If diagnostics are useful but noisy, I gate them behind `DEBUG = False` (default).
+
+### “No AI indicators” enforcement
+
+- No emojis
+- No placeholder text (e.g., `YOUR_CODE_HERE`)
+- No “v2 / old / backup / test / fixed / updated / corrected” wording inside notebooks, filenames, or headings
+
+### Required micro-structure per EDA section
+
+For each EDA subsection, I follow this structure:
+
+1) Markdown: why this matters for recommendations + expectation (1–3 lines)  
+2) Code: summary statistics table (mean/median/std/percentiles)  
+3) Code: 95% CI for one key metric (bootstrap) when applicable  
+4) Code: one plot with clear title/labels  
+5) Markdown: **Key findings** (3–6 bullets: numbers + implication for the next modeling step)
+
+### Mandatory style scan after edits
+
+After edits, I scan notebook JSON to ensure banned patterns are absent:
+
+- `print("\n" + "="*`
+- `"="*` or `"-"*` used as separators
+- large triple-quoted `print(f"""...""")` narrative blocks
+- repeated `.head()` / `.describe()` spam
+- the strings: `fixed`, `updated`, `corrected`, `v2`, `backup`, `old`, `test`
+
+If any appear, I refactor immediately by moving narrative to Markdown, splitting cells, and reducing outputs to top-k (while keeping figures intact).
+
+### Definition of done
+
+A notebook is portfolio-ready when each section reads like a concise report, outputs are compact, plots are labeled, and every section ends with Key findings + modeling implications with no AI-indicator patterns.
